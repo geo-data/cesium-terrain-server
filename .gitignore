@@ -1,0 +1,6 @@
+bin
+pkg
+server
+src/github.com
+data/smallterrain-blank.terrain
+src/cesium-terrain-server/assets/
