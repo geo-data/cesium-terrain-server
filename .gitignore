@@ -5,3 +5,4 @@ src/github.com
 data/smallterrain-blank.terrain
 src/cesium-terrain-server/assets/
 docker/cesium-terrain-server.tar.gz
+docker/Cesium-*.zip

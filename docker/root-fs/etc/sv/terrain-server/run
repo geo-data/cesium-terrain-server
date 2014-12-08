@@ -5,10 +5,10 @@
 #
 
 # Ensure the data directory exists
-if [ ! -d /data/tilesets ]; then
-    echo "The /data/tilesets directory must be present" >&2
+if [ ! -d /data/tilesets/terrain ]; then
+    echo "The /data/tilesets/terrain directory must be present" >&2
     exit 1
 fi
 
 # Run the server
-exec /sbin/setuser daemon /usr/local/bin/terrain-server /cesium-terrain-server -port 8000 -dir /data/tilesets
+exec /sbin/setuser daemon /usr/local/bin/terrain-server /cesium-terrain-server -port 8000 -dir /data/tilesets/terrain

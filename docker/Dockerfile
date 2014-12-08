@@ -34,15 +34,35 @@ RUN cd /tmp/cesium-terrain-server && \
     make server && \
     install --strip ./server /usr/local/bin/terrain-server
 
+# Install Apache
+RUN apt-get install -y \
+    apache2 \
+    apache2-utils \
+    unzip
+RUN mkdir /var/lock/apache2 /var/run/apache2
+RUN a2enmod proxy_http
+RUN a2dissite 000-default
+
+# Install Cesium.js
+RUN mkdir /tmp/cesium /var/www/cesium
+ADD Cesium-1.3.zip /tmp/cesium/
+RUN cd /tmp/cesium && \
+    unzip Cesium-1.3.zip && \
+    mv Apps ThirdParty Build /var/www/cesium/
+
 # Add our filesystem updates
 ADD ./root-fs /tmp/root-fs
 RUN rsync -a /tmp/root-fs/ /
 
-# Expose the terrain server port
-EXPOSE 8000
+# Enable the application
+RUN a2enconf fqdn
+RUN a2ensite terrain-server
+
+# Expose the terrain server and apache ports
+EXPOSE 8000 80
 
 # Clean up APT when done
-#RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
