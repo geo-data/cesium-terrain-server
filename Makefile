@@ -18,13 +18,13 @@ bin/go-bindata: data/smallterrain-blank.terrain
 	go get github.com/jteeuwen/go-bindata/... && touch bin/go-bindata
 
 data/smallterrain-blank.terrain:
-	wget --no-verbose --directory-prefix=data https://raw.github.com/geo-data/cesium-terrain-builder/master/data/smallterrain-blank.terrain
+	curl --location https://raw.github.com/geo-data/cesium-terrain-builder/master/data/smallterrain-blank.terrain > data/smallterrain-blank.terrain
 
 docker-local: docker/local/cesium-terrain-server.tar.gz docker/local/Cesium-$(cesium_version).zip
 	docker build -t geodata/cesium-terrain-server:local docker
 
 docker/local/Cesium-$(cesium_version).zip: docker/cesium-version.txt
-	wget --no-verbose --directory-prefix=docker/local https://cesiumjs.org/releases/Cesium-$(cesium_version).zip
+	curl --location https://cesiumjs.org/releases/Cesium-$(cesium_version).zip > docker/local/Cesium-$(cesium_version).zip
 
 docker/local/cesium-terrain-server.tar.gz:
 	tar -czvf docker/local/cesium-terrain-server.tar.gz docker/cesium-version.txt src/cesium-terrain-server Makefile
