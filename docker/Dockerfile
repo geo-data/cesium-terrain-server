@@ -24,16 +24,6 @@ RUN apt-get install -y \
     mercurial \
     rsync
 
-# Install Go
-ADD install-go.sh /tmp/
-RUN /tmp/install-go.sh
-
-# Install the terrain server
-ADD cesium-terrain-server.tar.gz /tmp/cesium-terrain-server/
-RUN cd /tmp/cesium-terrain-server && \
-    make server && \
-    install --strip ./server /usr/local/bin/terrain-server
-
 # Install Apache
 RUN apt-get install -y \
     apache2 \
@@ -43,12 +33,18 @@ RUN mkdir /var/lock/apache2 /var/run/apache2
 RUN a2enmod proxy_http
 RUN a2dissite 000-default
 
+# Install Go
+ADD install-go.sh /tmp/
+RUN /tmp/install-go.sh
+
+# Install the terrain server
+ADD local/ /tmp/local/
+ADD install-terrain-server.sh /tmp/
+RUN /tmp/install-terrain-server.sh
+
 # Install Cesium.js
-RUN mkdir /tmp/cesium /var/www/cesium
-ADD Cesium-1.3.zip /tmp/cesium/
-RUN cd /tmp/cesium && \
-    unzip Cesium-1.3.zip && \
-    mv Apps ThirdParty Build /var/www/cesium/
+ADD install-cesiumjs.sh /tmp/
+RUN /tmp/install-cesiumjs.sh
 
 # Add our filesystem updates
 ADD ./root-fs /tmp/root-fs

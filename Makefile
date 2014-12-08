@@ -19,10 +19,10 @@ bin/go-bindata: data/smallterrain-blank.terrain
 data/smallterrain-blank.terrain:
 	wget --no-verbose --directory-prefix=data https://raw.github.com/geo-data/cesium-terrain-builder/master/data/smallterrain-blank.terrain
 
-docker-local: docker/cesium-terrain-server.tar.gz
+docker-local: docker/local/cesium-terrain-server.tar.gz
 	docker build -t geodata/cesium-terrain-server:local docker
 
-docker/cesium-terrain-server.tar.gz:
-	tar -czvf docker/cesium-terrain-server.tar.gz src/cesium-terrain-server Makefile
+docker/local/cesium-terrain-server.tar.gz:
+	tar -czvf docker/local/cesium-terrain-server.tar.gz src/cesium-terrain-server Makefile
 
 .PHONY: docker-local
