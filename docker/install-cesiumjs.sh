@@ -4,7 +4,7 @@
 # Install the latest stable release of CesiumJS
 #
 
-CESIUM_VERSION=1.3
+CESIUM_VERSION=`cat /tmp/cesium-version.txt`
 
 mkdir /tmp/cesium /var/www/cesium || exit 1
 cd /tmp/cesium || exit 1

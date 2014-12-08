@@ -43,7 +43,7 @@ ADD install-terrain-server.sh /tmp/
 RUN /tmp/install-terrain-server.sh
 
 # Install Cesium.js
-ADD install-cesiumjs.sh /tmp/
+ADD cesium-version.txt install-cesiumjs.sh /tmp/
 RUN /tmp/install-cesiumjs.sh
 
 # Add our filesystem updates
