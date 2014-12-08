@@ -75,7 +75,7 @@ func terrainHandler(tilesetRoot string) func(http.ResponseWriter, *http.Request)
 		}
 
 		// try and read the file from disk
-		rootDir := filepath.Join(".", "tilesets", vars["tileset"])
+		rootDir := filepath.Join(tilesetRoot, vars["tileset"])
 		err = t.loadFromFs(rootDir)
 		if err != nil {
 			if os.IsNotExist(err) {
