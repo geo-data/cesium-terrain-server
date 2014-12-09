@@ -26,7 +26,7 @@ docker-local: docker/local/cesium-terrain-server.tar.gz docker/local/Cesium-$(ce
 docker/local/Cesium-$(cesium_version).zip: docker/cesium-version.txt
 	curl --location https://cesiumjs.org/releases/Cesium-$(cesium_version).zip > docker/local/Cesium-$(cesium_version).zip
 
-docker/local/cesium-terrain-server.tar.gz:
-	tar -czvf docker/local/cesium-terrain-server.tar.gz docker/cesium-version.txt src/cesium-terrain-server Makefile
+docker/local/cesium-terrain-server.tar.gz: src/cesium-terrain-server/server.go src/cesium-terrain-server/assets/assets.go
+	tar --exclude data/* -czvf docker/local/cesium-terrain-server.tar.gz docker/cesium-version.txt src/cesium-terrain-server Makefile data
 
 .PHONY: docker-local

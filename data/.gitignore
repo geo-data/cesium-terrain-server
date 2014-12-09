@@ -1,0 +1,4 @@
+# Ignore everything we don't need in this directory
+smallterrain-blank.terrain
+# Except this file
+!.gitignore
