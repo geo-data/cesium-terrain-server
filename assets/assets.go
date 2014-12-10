@@ -40,27 +40,6 @@ func (fi bindata_file_info) Sys() interface{} {
 	return nil
 }
 
-var _data_gitignore = []byte(`# Ignore everything we don't need in this directory
-smallterrain-blank.terrain
-# Except this file
-!.gitignore
-`)
-
-func data_gitignore_bytes() ([]byte, error) {
-	return _data_gitignore, nil
-}
-
-func data_gitignore() (*asset, error) {
-	bytes, err := data_gitignore_bytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindata_file_info{name: "data/.gitignore", size: 110, mode: os.FileMode(420), modTime: time.Unix(1418210004, 0)}
-	a := &asset{bytes: bytes, info:  info}
-	return a, nil
-}
-
 var _data_smallterrain_blank_terrain = []byte("\x1f\x8b\b\x00\x00\x00\x00\x00\x00\x03\xed\xce\xc1\r\x80 \x14\x04Qz\xb0h\x11\x9a\xf6@H0~\xaf\xbb\xdf0\x99\x02\xe6գ\n;\x83\x94\u007f\x04_\n\xbd\x80\x882t%\x10\xcc\xfc\x02\x97\x05\x81_\x10\xfdw\x13\xb4\x04\x82\x91_\xf0\x948\x05C\xe1\x164\x04\b6\x14\xf4\x04\x82Ƞ\x16\xf4\x97\xc3#X\x1dJ\x01\x11\x11\x11\x11\x11\x11\x11\xfd\xb3Rn\xd9\x11d\xac\x04!\x00\x00")
 
 func data_smallterrain_blank_terrain_bytes() ([]byte, error) {
@@ -73,7 +52,7 @@ func data_smallterrain_blank_terrain() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "data/smallterrain-blank.terrain", size: 114, mode: os.FileMode(420), modTime: time.Unix(1418211210, 0)}
+	info := bindata_file_info{name: "data/smallterrain-blank.terrain", size: 114, mode: os.FileMode(420), modTime: time.Unix(1416486475, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -119,7 +98,6 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"data/.gitignore": data_gitignore,
 	"data/smallterrain-blank.terrain": data_smallterrain_blank_terrain,
 }
 
@@ -164,8 +142,6 @@ type _bintree_t struct {
 }
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 	"data": &_bintree_t{nil, map[string]*_bintree_t{
-		".gitignore": &_bintree_t{data_gitignore, map[string]*_bintree_t{
-		}},
 		"smallterrain-blank.terrain": &_bintree_t{data_smallterrain_blank_terrain, map[string]*_bintree_t{
 		}},
 	}},

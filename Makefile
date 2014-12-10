@@ -4,7 +4,7 @@ server: server.go .go-bindata assets/assets.go
 	go get -d ./... && go build server.go
 
 assets/assets.go: .go-bindata data
-	go-bindata -nocompress -pkg="assets" -o assets/assets.go data
+	go-bindata -ignore \\.gitignore -nocompress -pkg="assets" -o assets/assets.go data
 
 .go-bindata: data/smallterrain-blank.terrain
 	go get github.com/jteeuwen/go-bindata/... && touch .go-bindata
