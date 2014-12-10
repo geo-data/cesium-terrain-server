@@ -2,4 +2,4 @@ bin
 pkg
 server
 src/github.com
-src/cesium-terrain-server/assets/
+.go-bindata

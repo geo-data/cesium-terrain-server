@@ -2,10 +2,10 @@
 package main
 
 import (
-	"cesium-terrain-server/assets"
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/geo-data/cesium-terrain-server/assets"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"io/ioutil"
