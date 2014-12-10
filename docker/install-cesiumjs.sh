@@ -14,5 +14,5 @@ if [ ! -f /tmp/local/Cesium-${CESIUM_VERSION}.zip ]; then
     wget --no-verbose --directory-prefix=/tmp/local https://cesiumjs.org/releases/Cesium-${CESIUM_VERSION}.zip || exit 1
 fi
 
-unzip /tmp/local/Cesium-${CESIUM_VERSION}.zip || exit 1
+unzip -q /tmp/local/Cesium-${CESIUM_VERSION}.zip || exit 1
 mv Apps ThirdParty Build /var/www/cesium/ || exit 1
