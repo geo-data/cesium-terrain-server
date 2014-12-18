@@ -31,14 +31,41 @@ Usage of server:
   -port=8000: the port on which the server listens
 ```
 
-Assuming you have a terrain tileset (possibly created with
-[`ctb-tile`](https://github.com/geo-data/cesium-terrain-builder#ctb-tile))
-located at `/data/tilesets/terrain` which you want served up on port `8080`, you
-would run the following command:
+Assume you have the following (small) terrain tileset (possibly created with
+[`ctb-tile`](https://github.com/geo-data/cesium-terrain-builder#ctb-tile)):
+
+```
+/data/tilesets/terrain/srtm/
+├── 0
+│   └── 0
+│       └── 0.terrain
+├── 1
+│   └── 1
+│       └── 1.terrain
+├── 2
+│   └── 3
+│       └── 3.terrain
+└── 3
+    └── 7
+        └── 6.terrain
+```
+
+To serve this tileset on port `8080`, you would run the following command:
 
 ```sh
 ./server -dir /data/tilesets/terrain -port 8080
 ```
+
+The tiles would then be available under <http://localhost:8080/tilesets/srtm/>
+(e.g. <http://localhost:8080/tilesets/srtm/0/0/0.terrain> for the root tile).
+This URL, for instance, is what you would use when configuring
+[`CesiumTerrainProvider`](http://cesiumjs.org/Cesium/Build/Documentation/CesiumTerrainProvider.html)
+in the Cesium client.
+
+Serving up additional tilesets is simply a matter of adding the tileset as a
+subdirectory to `/data/tilesets/terrain/`.  For example, adding a tileset
+directory called `lidar` to that location will result in the tileset being
+available under <http://localhost:8080/tilesets/lidar/>.
 
 ### `layer.json`
 
