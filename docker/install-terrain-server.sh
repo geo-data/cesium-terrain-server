@@ -19,5 +19,5 @@ else
 fi
 
 # Build and install the server
-make server || exit 1
-install --strip ./server /usr/local/bin/terrain-server || exit 1
+make bin/cesium-terrain-server || exit 1
+install --strip bin/cesium-terrain-server /usr/local/bin/terrain-server || exit 1
