@@ -2,9 +2,10 @@ package files
 
 import (
 	"encoding"
+	"fmt"
+	"github.com/geo-data/cesium-terrain-server/log"
 	"github.com/geo-data/cesium-terrain-server/stores"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -21,25 +22,26 @@ func New(root string) stores.Storer {
 
 // This is a no-op
 func (this *Store) Save(key string, obj encoding.BinaryMarshaler) error {
-	log.Printf("save fs: %s", key)
+	log.Debug(fmt.Sprintf("file store: save: %s", key))
 	return nil
 }
 
 // Load a terrain tile on disk into the Terrain structure.
 func (this *Store) Load(key string, obj encoding.BinaryUnmarshaler) (err error) {
-	log.Printf("load fs key: %s", key)
 	filename := filepath.Join(
 		this.root,
 		key)
+
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
+			log.Debug(fmt.Sprintf("file store: not found: %s", filename))
 			err = stores.ErrNoItem
 		}
 		return
 	}
 
+	log.Debug(fmt.Sprintf("file store: load: %s", filename))
 	err = obj.UnmarshalBinary(body)
-	log.Printf("load fs: %s", filename)
 	return
 }

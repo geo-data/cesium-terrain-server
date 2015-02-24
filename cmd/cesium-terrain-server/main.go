@@ -2,8 +2,10 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"github.com/geo-data/cesium-terrain-server/log"
 	"github.com/geo-data/cesium-terrain-server/server"
 	"github.com/geo-data/cesium-terrain-server/stores"
 	"github.com/geo-data/cesium-terrain-server/stores/files"
@@ -12,7 +14,7 @@ import (
 	"github.com/geo-data/cesium-terrain-server/stores/tiles"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"log"
+	l "log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -60,11 +62,55 @@ func CreateTileStores(tilesetRoot, memcache string) []*tiles.Store {
 	return stores
 }
 
+type LogOpt struct {
+	Priority log.Priority
+}
+
+func NewLogOpt() *LogOpt {
+	return &LogOpt{
+		Priority: log.LOG_NOTICE,
+	}
+}
+
+func (this *LogOpt) String() string {
+	switch this.Priority {
+	case log.LOG_CRIT:
+		return "crit"
+	case log.LOG_ERR:
+		return "err"
+	case log.LOG_NOTICE:
+		return "notice"
+	default:
+		return "debug"
+	}
+}
+
+func (this *LogOpt) Set(level string) error {
+	switch level {
+	case "crit":
+		this.Priority = log.LOG_CRIT
+	case "err":
+		this.Priority = log.LOG_ERR
+	case "notice":
+		this.Priority = log.LOG_NOTICE
+	case "debug":
+		this.Priority = log.LOG_DEBUG
+	default:
+		return errors.New("choose one of crit, err, notice, debug")
+	}
+	return nil
+}
+
 func main() {
 	port := flag.Uint("port", 8000, "the port on which the server listens")
 	tilesetRoot := flag.String("dir", ".", "the root directory under which tileset directories reside")
 	memcache := flag.String("memcache", "", "memcache connection string for caching tiles e.g. localhost:11211")
+	logging := NewLogOpt()
+	flag.Var(logging, "log-level", "level at which logging occurs. One of crit, err, notice, debug")
 	flag.Parse()
+
+	// Set the logging
+	log.SetLog(l.New(os.Stderr, "", l.LstdFlags), logging.Priority)
 
 	// Generate a list of valid tile stores.
 	tileStores := CreateTileStores(*tilesetRoot, *memcache)
@@ -81,6 +127,9 @@ func main() {
 
 	http.Handle("/", handlers.CombinedLoggingHandler(os.Stdout, server.AddCorsHeader(r)))
 
-	log.Println("Terrain server listening on port", *port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+	log.Notice(fmt.Sprintf("server listening on port %d", *port))
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
+		log.Crit(fmt.Sprintf("server failed: %s", err))
+		os.Exit(1)
+	}
 }

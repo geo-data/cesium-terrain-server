@@ -1,5 +1,4 @@
 bin
 pkg
-server
 src/github.com
 .go-bindata
