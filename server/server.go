@@ -141,7 +141,6 @@ func LayerHandler(tilesetRoot string, stores []db.Storer) func(http.ResponseWrit
 			}
 
 			// the directory exists: send the default `layer.json`
-
 			err = response.UnmarshalBinary([]byte(`{
   "tilejson": "2.1.0",
   "format": "heightmap-1.0",

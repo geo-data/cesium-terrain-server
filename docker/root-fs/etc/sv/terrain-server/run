@@ -10,5 +10,11 @@ if [ ! -d /data/tilesets/terrain ]; then
     exit 1
 fi
 
+# If a memcached container has been linked in then use it
+if [ -n "${MEMCACHED_PORT_11211_TCP_PORT}" ]
+then
+    MEMCACHED="memcached:${MEMCACHED_PORT_11211_TCP_PORT}"
+fi
+
 # Run the server
-exec /sbin/setuser daemon /usr/local/bin/terrain-server -port 8000 -dir /data/tilesets/terrain
+exec /sbin/setuser daemon /usr/local/bin/terrain-server -port 8000 -memcached "${MEMCACHED}" -dir /data/tilesets/terrain 2>&1

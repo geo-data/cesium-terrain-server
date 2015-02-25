@@ -2,7 +2,7 @@ cesium_version:=$(shell cat $(CURDIR)/docker/cesium-version.txt)
 GOFILES:=$(shell find . -name '*.go')
 
 bin/cesium-terrain-server: $(GOFILES)
-	GOBIN=./bin go install ./...
+	GOBIN=./bin go get ./... && go install ./...
 
 assets/assets.go: .go-bindata data
 	go-bindata -ignore \\.gitignore -nocompress -pkg="assets" -o assets/assets.go data
@@ -20,6 +20,6 @@ docker/local/Cesium-$(cesium_version).zip: docker/cesium-version.txt
 	curl --location --progress-bar https://cesiumjs.org/releases/Cesium-$(cesium_version).zip > docker/local/Cesium-$(cesium_version).zip
 
 docker/local/cesium-terrain-server.tar.gz: $(GOFILES) docker/cesium-version.txt Makefile
-	tar --exclude data/* -czvf docker/local/cesium-terrain-server.tar.gz docker/cesium-version.txt server assets Makefile data
+	tar --exclude data/* -czvf docker/local/cesium-terrain-server.tar.gz $(GOFILES) docker/cesium-version.txt Makefile data
 
 .PHONY: docker-local

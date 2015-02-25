@@ -104,7 +104,7 @@ func (this *LogOpt) Set(level string) error {
 func main() {
 	port := flag.Uint("port", 8000, "the port on which the server listens")
 	tilesetRoot := flag.String("dir", ".", "the root directory under which tileset directories reside")
-	memcache := flag.String("memcache", "", "memcache connection string for caching tiles e.g. localhost:11211")
+	memcache := flag.String("memcached", "", "memcached connection string for caching tiles e.g. localhost:11211")
 	logging := NewLogOpt()
 	flag.Var(logging, "log-level", "level at which logging occurs. One of crit, err, notice, debug")
 	flag.Parse()
