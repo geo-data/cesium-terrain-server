@@ -9,10 +9,7 @@ JavaScript class present in the Cesium.js client.
 This has specifically been created for easing the development and testing of
 terrain tilesets created using the
 [Cesium Terrain Builder](https://github.com/geo-data/cesium-terrain-builder)
-tools.  On its own it is not recommended for production deployments as no
-optimisation (especially caching) has been implemented yet.  Caching, however,
-can be added to the stack using third party HTTP caching tools.  The code base
-can also provide a useful starting point for developing custom applications.
+tools.
 
 This project also provides a [Docker](https://www.docker.com/) container to
 further simplify deployment of the server and testing of tilesets.  See the
@@ -25,9 +22,10 @@ The terrain server is a self contained binary with the following command line
 options:
 
 ```sh
-$ ./server -help
-Usage of server:
+$ cesium-terrain-server:
   -dir=".": the root directory under which tileset directories reside
+  -log-level=notice: level at which logging occurs. One of crit, err, notice, debug
+  -memcached="": memcached connection string for caching tiles e.g. localhost:11211
   -port=8000: the port on which the server listens
 ```
 
@@ -53,7 +51,7 @@ Assume you have the following (small) terrain tileset (possibly created with
 To serve this tileset on port `8080`, you would run the following command:
 
 ```sh
-./server -dir /data/tilesets/terrain -port 8080
+cesium-terrain-server -dir /data/tilesets/terrain -port 8080
 ```
 
 The tiles would then be available under <http://localhost:8080/tilesets/srtm/>
@@ -86,6 +84,17 @@ terrain dataset intersects with the prime meridian.  The terrain server
 addresses this issue by serving up a blank terrain tile if a top level tile is
 requested which does not also exist on the filesystem.
 
+### Caching tiles with Memcached
+
+The terrain server can use a memcache server to cache tileset data and increase
+performance.  It requires specifying the network address of a memcached server
+(including the port) using the `-memcached` option.  E.g. A memcached server
+running at `memcache.me.org` on port `11211` can be used as follows:
+
+```sh
+cesium-terrain-server -dir /data/tilesets/terrain -memcached memcache.me.org:11211
+```
+
 ## Installation
 
 The server is written in [Go](http://golang.org/) and requires Go to be present
@@ -104,8 +113,8 @@ A program called `cesium-terrain-server` should then be available under your
 ## Developing
 
 The code has been developed on a Linux platform. After downloading the package
-you should be able to run `make server` from the project root to build the
-server.
+you should be able to run `make` from the project root to build the server,
+which will be available as `./bin/cesium-terrain-server`.
 
 Executing `make docker-local` will create a docker image tagged
 `geodata/cesium-terrain-server:local` which when run with a bind mount to the
