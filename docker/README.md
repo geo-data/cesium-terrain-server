@@ -36,6 +36,13 @@ requires the host directory `/data/docker/tilesets/terrain/test` to contain a
 terrain tileset, which will in turn expose the tileset to
 `/data/tilesets/terrain/test` in the container.
 
+## Logging
+
+All requests to the apache server are logged to
+`/var/log/apache2/other_vhosts_access.log`. All output from the terrain server
+is logged under `/var/log/terrain-server`.  This log is managed by
+[svlogd](http://smarden.org/runit/svlogd.8.html).
+
 ## Creating and serving tilesets
 
 This container has been designed to be work with the
@@ -70,6 +77,40 @@ docker run -p 8080:80 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
 ```
 
 The terrain data should now be visible at <http://localhost:8080/>.
+
+## Caching tiles with Memcached
+
+The terrain server running within the container can be configured to use a
+memcache server to cache tileset data and increase performance.  This is done by
+either specifying a memcached container to link to or setting the `MEMCACHED`
+environment variable.
+
+### Linking
+
+Any container running memcached on port 11211 and linked with the alias
+`memcached` will be used.  E.g. assume the following memcached container is
+running:
+
+```sh
+docker run --name memcache -d memcached
+```
+
+This can then be used by a terrain server image:
+
+```sh
+docker run --name terrain -d --link memcache:memcached geodata/cesium-terrain-server
+```
+
+### `MEMCACHED` Environment variable
+
+A memcached server that is not linked can be still used by setting the container
+`MEMCACHED` environment variable to point to the memcached network address e.g.
+
+```sh
+docker run --name terrain -d --env MEMCACHED=memcache.me.org:11211 geodata/cesium-terrain-server
+```
+
+Linking takes precedence over setting `MEMCACHED`.
 
 ## Developing Cesium applications
 
