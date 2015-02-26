@@ -105,6 +105,8 @@ func main() {
 	tilesetRoot := flag.String("dir", ".", "the root directory under which tileset directories reside")
 	webRoot := flag.String("web-dir", "", "(optional) the root directory containing static files to be served")
 	memcached := flag.String("memcached", "", "(optional) memcached connection string for caching tiles e.g. localhost:11211")
+	baseTerrainUrl := flag.String("base-terrain-url", "/tilesets", "base url prefix under which all tilesets are served")
+	noRequestLog := flag.Bool("no-request-log", false, "do not log client requests for resources")
 	logging := NewLogOpt()
 	flag.Var(logging, "log-level", "level at which logging occurs. One of crit, err, notice, debug")
 	flag.Parse()
@@ -122,8 +124,8 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/tilesets/terrain/{tileset}/layer.json", myhandlers.LayerHandler(*tilesetRoot, stores))
-	r.HandleFunc("/tilesets/terrain/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain", myhandlers.TerrainHandler(tileStores))
+	r.HandleFunc(*baseTerrainUrl+"/{tileset}/layer.json", myhandlers.LayerHandler(*tilesetRoot, stores))
+	r.HandleFunc(*baseTerrainUrl+"/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain", myhandlers.TerrainHandler(tileStores))
 	if len(*webRoot) > 0 {
 		log.Debug(fmt.Sprintf("serving static resources from %s", *webRoot))
 		r.PathPrefix("/").Handler(http.FileServer(http.Dir(*webRoot)))
@@ -135,7 +137,11 @@ func main() {
 		handler = myhandlers.NewCache(*memcached, handler)
 	}
 
-	http.Handle("/", handlers.CombinedLoggingHandler(os.Stdout, handler))
+	if *noRequestLog == false {
+		handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
+	}
+
+	http.Handle("/", handler)
 
 	log.Notice(fmt.Sprintf("server listening on port %d", *port))
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
