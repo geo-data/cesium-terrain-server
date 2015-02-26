@@ -1,15 +1,25 @@
-package terrain
+package stores
 
 import (
-	"github.com/geo-data/cesium-terrain-server/stores/items"
 	"strconv"
 )
 
 // Representation of a terrain tile. This includes the x, y, z coordinate and
 // the byte sequence of the tile itself. Note that terrain tiles are gzipped.
 type Terrain struct {
-	items.Item
+	value   []byte
 	X, Y, Z uint64
+}
+
+// MarshalBinary implements the encoding.MarshalBinary interface.
+func (this *Terrain) MarshalBinary() ([]byte, error) {
+	return this.value, nil
+}
+
+// UnmarshalBinary implements the encoding.UnmarshalBinary interface.
+func (this *Terrain) UnmarshalBinary(data []byte) error {
+	this.value = data
+	return nil
 }
 
 // IsRoot returns true if the tile represents a root tile.

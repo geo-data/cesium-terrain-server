@@ -1,13 +1,21 @@
 package stores
 
 import (
-	"encoding"
 	"errors"
+)
+
+type TilesetStatus byte
+
+const (
+	NOT_SUPPORTED TilesetStatus = iota
+	NOT_FOUND
+	FOUND
 )
 
 var ErrNoItem = errors.New("item not found")
 
 type Storer interface {
-	Load(key string, obj encoding.BinaryUnmarshaler) error
-	Save(key string, obj encoding.BinaryMarshaler) error
+	Tile(tileset string, tile *Terrain) error
+	Layer(tileset string) ([]byte, error)
+	TilesetStatus(tileset string) (status TilesetStatus)
 }

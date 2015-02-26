@@ -5,18 +5,16 @@ import (
 	"fmt"
 	"github.com/geo-data/cesium-terrain-server/assets"
 	"github.com/geo-data/cesium-terrain-server/log"
-	db "github.com/geo-data/cesium-terrain-server/stores"
-	"github.com/geo-data/cesium-terrain-server/stores/items/terrain"
-	"github.com/geo-data/cesium-terrain-server/stores/tiles"
+	"github.com/geo-data/cesium-terrain-server/stores"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 // An HTTP handler which returns a terrain tile resource
-func TerrainHandler(stores []*tiles.Store) func(http.ResponseWriter, *http.Request) {
+func TerrainHandler(store stores.Storer) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			t   terrain.Terrain
+			t   stores.Terrain
 			err error
 		)
 
@@ -34,21 +32,17 @@ func TerrainHandler(stores []*tiles.Store) func(http.ResponseWriter, *http.Reque
 			return
 		}
 
-		// Try and get a tile from the stores
-		var idx int
-		for i, store := range stores {
-			idx = i
-			err = store.LoadTile(vars["tileset"], &t)
-			if err == nil {
-				break
-			} else if err == db.ErrNoItem {
-				continue
-			} else {
+		// Try and get a tile from the store
+		err = store.Tile(vars["tileset"], &t)
+		if err == stores.ErrNoItem {
+			if store.TilesetStatus(vars["tileset"]) == stores.NOT_FOUND {
+				err = nil
+				http.Error(w,
+					fmt.Errorf("The tileset `%s` does not exist", vars["tileset"]).Error(),
+					http.StatusNotFound)
 				return
 			}
-		}
 
-		if err == db.ErrNoItem {
 			if t.IsRoot() {
 				// serve up a blank tile as it is a missing root tile
 				data, err := assets.Asset("data/smallterrain-blank.terrain")
@@ -65,6 +59,8 @@ func TerrainHandler(stores []*tiles.Store) func(http.ResponseWriter, *http.Reque
 				http.Error(w, errors.New("The terrain tile does not exist").Error(), http.StatusNotFound)
 				return
 			}
+		} else if err != nil {
+			return
 		}
 
 		body, err := t.MarshalBinary()
@@ -78,14 +74,5 @@ func TerrainHandler(stores []*tiles.Store) func(http.ResponseWriter, *http.Reque
 		headers.Set("Content-Encoding", "gzip")
 		headers.Set("Content-Disposition", "attachment;filename="+vars["y"]+".terrain")
 		w.Write(body)
-
-		// Save the tile in any preceding stores that didn't have it.
-		if idx > 0 {
-			for j := 0; j < idx; j++ {
-				if err := stores[j].SaveTile(vars["tileset"], &t); err != nil {
-					log.Err(fmt.Sprintf("failed to store tileset: %s", err))
-				}
-			}
-		}
 	}
 }

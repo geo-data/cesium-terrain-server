@@ -7,59 +7,13 @@ import (
 	"fmt"
 	myhandlers "github.com/geo-data/cesium-terrain-server/handlers"
 	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
-	"github.com/geo-data/cesium-terrain-server/stores/files"
-	"github.com/geo-data/cesium-terrain-server/stores/items/terrain"
-	"github.com/geo-data/cesium-terrain-server/stores/tiles"
+	"github.com/geo-data/cesium-terrain-server/stores/fs"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	l "log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strconv"
 )
-
-type TileFileName struct {
-}
-
-func NewTileFileName() tiles.Namer {
-	return &TileFileName{}
-}
-
-func (this *TileFileName) TileName(tileset string, tile *terrain.Terrain) string {
-	return filepath.Join(
-		tileset,
-		strconv.FormatUint(tile.Z, 10),
-		strconv.FormatUint(tile.X, 10),
-		strconv.FormatUint(tile.Y, 10)+".terrain")
-}
-
-type TileCacheName struct {
-}
-
-func NewTileCacheName() tiles.Namer {
-	return &TileCacheName{}
-}
-
-func (this *TileCacheName) TileName(tileset string, tile *terrain.Terrain) string {
-	return fmt.Sprintf("%s-%d-%d-%d", tileset, tile.Z, tile.X, tile.Y)
-}
-
-func CreateTileStores(tilesetRoot, memcache string) []*tiles.Store {
-	// There will always be a base file system store
-	stores := []*tiles.Store{
-		tiles.New(NewTileFileName(), files.New(tilesetRoot)),
-	}
-
-	// If a memcache server has been specified, prepend it to the list of stores.
-	/*if len(memcache) > 0 {
-		tileStore := tiles.New(NewTileCacheName(), mc.New(memcache))
-		stores = append([]*tiles.Store{tileStore}, stores...)
-	}*/
-
-	return stores
-}
 
 type LogOpt struct {
 	Priority log.Priority
@@ -114,18 +68,12 @@ func main() {
 	// Set the logging
 	log.SetLog(l.New(os.Stderr, "", l.LstdFlags), logging.Priority)
 
-	// Generate a list of valid tile stores.
-	tileStores := CreateTileStores(*tilesetRoot, *memcached)
-
-	// The tile stores honour the Storer interface, which we also need.
-	var stores []stores.Storer
-	for _, store := range tileStores {
-		stores = append(stores, store)
-	}
+	// Get the tileset store
+	store := fs.New(*tilesetRoot)
 
 	r := mux.NewRouter()
-	r.HandleFunc(*baseTerrainUrl+"/{tileset}/layer.json", myhandlers.LayerHandler(*tilesetRoot, stores))
-	r.HandleFunc(*baseTerrainUrl+"/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain", myhandlers.TerrainHandler(tileStores))
+	r.HandleFunc(*baseTerrainUrl+"/{tileset}/layer.json", myhandlers.LayerHandler(store))
+	r.HandleFunc(*baseTerrainUrl+"/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain", myhandlers.TerrainHandler(store))
 	if len(*webRoot) > 0 {
 		log.Debug(fmt.Sprintf("serving static resources from %s", *webRoot))
 		r.PathPrefix("/").Handler(http.FileServer(http.Dir(*webRoot)))
