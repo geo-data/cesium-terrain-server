@@ -5,17 +5,19 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/server"
 	"github.com/geo-data/cesium-terrain-server/stores"
 	"github.com/geo-data/cesium-terrain-server/stores/files"
 	"github.com/geo-data/cesium-terrain-server/stores/items/terrain"
-	mc "github.com/geo-data/cesium-terrain-server/stores/memcache"
 	"github.com/geo-data/cesium-terrain-server/stores/tiles"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"io"
 	l "log"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -54,10 +56,10 @@ func CreateTileStores(tilesetRoot, memcache string) []*tiles.Store {
 	}
 
 	// If a memcache server has been specified, prepend it to the list of stores.
-	if len(memcache) > 0 {
+	/*if len(memcache) > 0 {
 		tileStore := tiles.New(NewTileCacheName(), mc.New(memcache))
 		stores = append([]*tiles.Store{tileStore}, stores...)
-	}
+	}*/
 
 	return stores
 }
@@ -101,10 +103,91 @@ func (this *LogOpt) Set(level string) error {
 	return nil
 }
 
+type multiWriter struct {
+	writers []http.ResponseWriter
+}
+
+func (t *multiWriter) Header() http.Header {
+	for _, w := range t.writers[1:] {
+		w.Header()
+	}
+
+	return t.writers[0].Header()
+}
+
+func (t *multiWriter) WriteHeader(status int) {
+	for _, w := range t.writers {
+		w.WriteHeader(status)
+	}
+}
+
+func (t *multiWriter) Write(p []byte) (n int, err error) {
+	for _, w := range t.writers {
+		n, err = w.Write(p)
+		if err != nil {
+			return
+		}
+		if n != len(p) {
+			err = io.ErrShortWrite
+			return
+		}
+	}
+	return len(p), nil
+}
+
+// MultiWriter is inspired by io.MultiWriter
+func MultiWriter(writers ...http.ResponseWriter) http.ResponseWriter {
+	w := make([]http.ResponseWriter, len(writers))
+	copy(w, writers)
+	return &multiWriter{w}
+}
+
+type CacheHandler struct {
+	mc      *memcache.Client
+	handler http.Handler
+}
+
+func NewCacheHandler(connstr string, handler http.Handler) http.Handler {
+	return &CacheHandler{
+		mc:      memcache.New(connstr),
+		handler: handler,
+	}
+}
+
+func (this *CacheHandler) generateKey(r *http.Request) string {
+	var u *url.URL
+	if referer, ok := r.Header["Referer"]; ok {
+		u, _ = url.Parse(referer[0])
+	} else {
+		// Copy the request URL
+		u, _ = url.Parse(r.URL.String())
+	}
+
+	return "tiles" + u.RequestURI()
+}
+
+func (this *CacheHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Debug(fmt.Sprintf("request: %+v", r.Header))
+	rec := httptest.NewRecorder()
+
+	// Write to both the recorder and original writer
+	tee := MultiWriter(w, rec)
+	this.handler.ServeHTTP(tee, r)
+
+	key := this.generateKey(r)
+	log.Debug(fmt.Sprintf("setting key: %s", key))
+	if err := this.mc.Set(&memcache.Item{Key: key, Value: rec.Body.Bytes()}); err != nil {
+		log.Err(err.Error())
+	}
+
+	return
+}
+
 func main() {
 	port := flag.Uint("port", 8000, "the port on which the server listens")
 	tilesetRoot := flag.String("dir", ".", "the root directory under which tileset directories reside")
-	memcache := flag.String("memcached", "", "memcached connection string for caching tiles e.g. localhost:11211")
+	webRoot := flag.String("web-dir", ".", "the root directory containing static files to be served")
+	memcached := flag.String("memcached", "", "memcached connection string for caching tiles e.g. localhost:11211")
 	logging := NewLogOpt()
 	flag.Var(logging, "log-level", "level at which logging occurs. One of crit, err, notice, debug")
 	flag.Parse()
@@ -113,7 +196,7 @@ func main() {
 	log.SetLog(l.New(os.Stderr, "", l.LstdFlags), logging.Priority)
 
 	// Generate a list of valid tile stores.
-	tileStores := CreateTileStores(*tilesetRoot, *memcache)
+	tileStores := CreateTileStores(*tilesetRoot, *memcached)
 
 	// The tile stores honour the Storer interface, which we also need.
 	var stores []stores.Storer
@@ -122,10 +205,11 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/tilesets/{tileset}/layer.json", server.LayerHandler(*tilesetRoot, stores))
-	r.HandleFunc("/tilesets/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain", server.TerrainHandler(tileStores))
+	r.HandleFunc("/tilesets/terrain/{tileset}/layer.json", server.LayerHandler(*tilesetRoot, stores))
+	r.HandleFunc("/tilesets/terrain/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain", server.TerrainHandler(tileStores))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir(*webRoot)))
 
-	http.Handle("/", handlers.CombinedLoggingHandler(os.Stdout, server.AddCorsHeader(r)))
+	http.Handle("/", handlers.CombinedLoggingHandler(os.Stdout, NewCacheHandler(*memcached, server.AddCorsHeader(r))))
 
 	log.Notice(fmt.Sprintf("server listening on port %d", *port))
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
