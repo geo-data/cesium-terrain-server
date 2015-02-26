@@ -2,7 +2,7 @@
 # Image for the Cesium Terrain Server
 #
 
-# Ubuntu 14.04
+# Ubuntu 14.04 Trusty Tahr
 FROM phusion/baseimage:0.9.15
 
 # Set correct environment variables.
@@ -22,16 +22,14 @@ RUN apt-get install -y \
     build-essential \
     git \
     mercurial \
-    rsync
-
-# Install Apache
-RUN apt-get install -y \
-    apache2 \
-    apache2-utils \
+    rsync \
     unzip
-RUN mkdir /var/lock/apache2 /var/run/apache2
-RUN a2enmod proxy_http
-RUN a2dissite 000-default
+
+# Install Nginx
+ADD nginx.list /etc/apt/sources.list.d/nginx.list
+RUN apt-key adv --fetch-keys http://nginx.org/keys/nginx_signing.key
+RUN apt-get install -y nginx
+RUN rm /etc/nginx/sites-enabled/default
 
 # Install Go
 ADD install-go.sh /tmp/
@@ -49,10 +47,6 @@ RUN /tmp/install-cesiumjs.sh
 # Add our filesystem updates
 ADD ./root-fs /tmp/root-fs
 RUN rsync -a /tmp/root-fs/ /
-
-# Enable the application
-RUN a2enconf fqdn
-RUN a2ensite terrain-server
 
 # Expose the terrain server and apache ports
 EXPOSE 8000 80

@@ -1,0 +1,29 @@
+##
+# Reverse proxy to the terrain server with memcached
+#
+# Nginx will attempt to serve the request from a resource stored in memcached.
+# If this does not exist it falls back to requesting the data from the terrain
+# server. This is dependent on the terrain server being properly configured to
+# populate memcached for each request using the `-memcached` option.
+#
+
+server {
+	listen 80;
+	listen [::]:80 ipv6only=on;
+
+	# Make site accessible from http://localhost/
+	server_name localhost;
+
+    location / {
+        set            $memcached_key "tiles$request_uri";
+        memcached_pass MEMCACHED;
+        error_page     404 502 504 = @fallback;
+    }
+
+    location @fallback {
+        proxy_pass     http://localhost:8000;
+        proxy_set_header Host $http_host;
+        #proxy_set_header Test $memcached_key;
+    }
+
+}
