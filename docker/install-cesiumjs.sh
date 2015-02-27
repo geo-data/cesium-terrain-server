@@ -6,7 +6,7 @@
 
 CESIUM_VERSION=`cat /tmp/cesium-version.txt`
 
-mkdir /tmp/cesium /var/www/cesium || exit 1
+mkdir -p /tmp/cesium /var/www/cesium || exit 1
 cd /tmp/cesium || exit 1
 
 # Get Cesium if we need to

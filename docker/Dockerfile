@@ -29,7 +29,7 @@ RUN apt-get install -y \
 ADD nginx.list /etc/apt/sources.list.d/nginx.list
 RUN apt-key adv --fetch-keys http://nginx.org/keys/nginx_signing.key
 RUN apt-get install -y nginx
-RUN rm /etc/nginx/sites-enabled/default
+RUN rm /etc/nginx/sites-enabled/*
 
 # Install Go
 ADD install-go.sh /tmp/
