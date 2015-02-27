@@ -23,10 +23,14 @@ options:
 
 ```sh
 $ cesium-terrain-server:
+  -base-terrain-url="/tilesets": base url prefix under which all tilesets are served
+  -cache-limit=1.00MB: the memory size in bytes beyond which resources are not cached. Other memory units can be specified by suffixing the number with kB, MB, GB or TB
   -dir=".": the root directory under which tileset directories reside
   -log-level=notice: level at which logging occurs. One of crit, err, notice, debug
-  -memcached="": memcached connection string for caching tiles e.g. localhost:11211
+  -memcached="": (optional) memcached connection string for caching tiles e.g. localhost:11211
+  -no-request-log=false: do not log client requests for resources
   -port=8000: the port on which the server listens
+  -web-dir="": (optional) the root directory containing static files to be served
 ```
 
 Assume you have the following (small) terrain tileset (possibly created with
@@ -65,6 +69,10 @@ subdirectory to `/data/tilesets/terrain/`.  For example, adding a tileset
 directory called `lidar` to that location will result in the tileset being
 available under <http://localhost:8080/tilesets/lidar/>.
 
+Note that the `-web-dir` option can be used to serve up static assets on the
+filesystem in addition to tilesets.  This makes it easy to use the server to
+prototype and develop web applications around the terrain data.
+
 ### `layer.json`
 
 The `CesiumTerrainProvider` Cesium.js class requires that a `layer.json`
@@ -86,14 +94,23 @@ requested which does not also exist on the filesystem.
 
 ### Caching tiles with Memcached
 
-The terrain server can use a memcache server to cache tileset data and increase
-performance.  It requires specifying the network address of a memcached server
-(including the port) using the `-memcached` option.  E.g. A memcached server
-running at `memcache.me.org` on port `11211` can be used as follows:
+The terrain server can use a memcache server to cache tileset data. It is
+important to note that the terrain server does not use the cache itself, it only
+populates it for each request.  The idea is that a reverse proxy attached to the
+memcache (such as Nginx) will first attempt to fulfil a request from the cache
+before falling back to the terrain server, which will then update the cache.
+
+Enabling this functionality requires specifying the network address of a
+memcached server (including the port) using the `-memcached` option.  E.g. A
+memcached server running at `memcache.me.org` on port `11211` can be used as
+follows:
 
 ```sh
 cesium-terrain-server -dir /data/tilesets/terrain -memcached memcache.me.org:11211
 ```
+
+The `-cache-limit` option can be used in conjunction with the above to change
+the memory limit at which resources are considered to large for the cache.
 
 ## Installation
 
