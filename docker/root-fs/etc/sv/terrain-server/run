@@ -20,10 +20,22 @@ else
     WEB_DIR="/var/www/cesium"
 fi
 
+# Decide on the log level
+[ -z "${LOG_LEVEL}" ] && LOG_LEVEL="notice"
+
+if [ "${LOG_REQUESTS}" = "0" ]
+then
+    NO_REQUEST_LOG="false"
+else
+    NO_REQUEST_LOG="true"
+fi
+
 # Run the server
 exec /sbin/setuser daemon /usr/local/bin/terrain-server \
     -port 8000 \
     -memcached "${MEMCACHED}" \
     -dir "${TILESET_DIR}" \
     -web-dir "${WEB_DIR}" \
+    -log-level "${LOG_LEVEL}" \
+    -no-request-log "${NO_REQUEST_LOG}" \
     2>&1

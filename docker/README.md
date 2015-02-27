@@ -31,9 +31,23 @@ requires the host directory `/data/docker/tilesets/terrain/test` to contain a
 terrain tileset, which will in turn expose the tileset to
 `/data/tilesets/terrain/test` in the container.
 
-Note that if you only want to serve tilesets and none of the Cesium static
-assets, you can set the `SERVE_STATIC` environment variable to `0`.  This is
-easily done by using `docker run --env SERVE_STATIC=0`.
+### Environment options
+
+A number of environment variables can be set on the container using `docker run
+--env` which affect its behaviour:
+
+* Setting `SERVE_STATIC=0` will prevent the terrain server for serving up any of
+  the static Cesium.js assets.  Useful if you only want to serve terrain
+  tilesets.
+
+* Setting `LOG_LEVEL` to one of `crit`, `err`, `notice`, `debug` will determine
+  what is logged.  `LOG_LEVEL=debug` is useful when developing, especially
+  checking what keys are being set in Memcached.
+
+* Setting `LOG_REQUESTS=0` will prevent the logging of HTTP requests.
+
+* Setting `MEMCACHED` enables caching tiles with Memcached.  See the relevant
+  section below for details.
 
 ## Creating and serving tilesets
 
