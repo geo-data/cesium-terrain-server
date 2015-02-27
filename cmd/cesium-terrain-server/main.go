@@ -2,7 +2,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	myhandlers "github.com/geo-data/cesium-terrain-server/handlers"
@@ -15,45 +14,6 @@ import (
 	"os"
 )
 
-type LogOpt struct {
-	Priority log.Priority
-}
-
-func NewLogOpt() *LogOpt {
-	return &LogOpt{
-		Priority: log.LOG_NOTICE,
-	}
-}
-
-func (this *LogOpt) String() string {
-	switch this.Priority {
-	case log.LOG_CRIT:
-		return "crit"
-	case log.LOG_ERR:
-		return "err"
-	case log.LOG_NOTICE:
-		return "notice"
-	default:
-		return "debug"
-	}
-}
-
-func (this *LogOpt) Set(level string) error {
-	switch level {
-	case "crit":
-		this.Priority = log.LOG_CRIT
-	case "err":
-		this.Priority = log.LOG_ERR
-	case "notice":
-		this.Priority = log.LOG_NOTICE
-	case "debug":
-		this.Priority = log.LOG_DEBUG
-	default:
-		return errors.New("choose one of crit, err, notice, debug")
-	}
-	return nil
-}
-
 func main() {
 	port := flag.Uint("port", 8000, "the port on which the server listens")
 	tilesetRoot := flag.String("dir", ".", "the root directory under which tileset directories reside")
@@ -63,6 +23,9 @@ func main() {
 	noRequestLog := flag.Bool("no-request-log", false, "do not log client requests for resources")
 	logging := NewLogOpt()
 	flag.Var(logging, "log-level", "level at which logging occurs. One of crit, err, notice, debug")
+	limit := NewLimitOpt()
+	limit.Set("1MB")
+	flag.Var(limit, "cache-limit", `the memory size in bytes beyond which resources are not cached. Other memory units can be specified by suffixing the number with kB, MB, GB or TB`)
 	flag.Parse()
 
 	// Set the logging
@@ -82,7 +45,7 @@ func main() {
 	handler := myhandlers.AddCorsHeader(r)
 	if len(*memcached) > 0 {
 		log.Debug(fmt.Sprintf("memcached enabled for all resources: %s", *memcached))
-		handler = myhandlers.NewCache(*memcached, handler)
+		handler = myhandlers.NewCache(*memcached, handler, limit.Value, myhandlers.NewLimit)
 	}
 
 	if *noRequestLog == false {
