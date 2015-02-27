@@ -4,11 +4,26 @@
 # Runit run script for the terrain server
 #
 
+TILESET_DIR=/data/tilesets/terrain
+
 # Ensure the data directory exists
-if [ ! -d /data/tilesets/terrain ]; then
-    echo "The /data/tilesets/terrain directory must be present" >&2
+if [ ! -d "${TILESET_DIR}" ]; then
+    echo "The ${TILESET_DIR} directory must be present" >&2
     exit 1
 fi
 
+#  Decide whether to serve up static cesium js assets
+if [ "${SERVE_STATIC}" = "0" ]
+then
+    WEB_DIR=""
+else
+    WEB_DIR="/var/www/cesium"
+fi
+
 # Run the server
-exec /sbin/setuser daemon /usr/local/bin/terrain-server -port 8000 -memcached "${MEMCACHED}" -dir /data/tilesets/terrain 2>&1
+exec /sbin/setuser daemon /usr/local/bin/terrain-server \
+    -port 8000 \
+    -memcached "${MEMCACHED}" \
+    -dir "${TILESET_DIR}" \
+    -web-dir "${WEB_DIR}" \
+    2>&1

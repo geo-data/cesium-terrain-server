@@ -25,12 +25,6 @@ RUN apt-get install -y \
     rsync \
     unzip
 
-# Install Nginx
-ADD nginx.list /etc/apt/sources.list.d/nginx.list
-RUN apt-key adv --fetch-keys http://nginx.org/keys/nginx_signing.key
-RUN apt-get install -y nginx
-RUN rm /etc/nginx/sites-enabled/*
-
 # Install Go
 ADD install-go.sh /tmp/
 RUN /tmp/install-go.sh
@@ -48,8 +42,8 @@ RUN /tmp/install-cesiumjs.sh
 ADD ./root-fs /tmp/root-fs
 RUN rsync -a /tmp/root-fs/ /
 
-# Expose the terrain server and apache ports
-EXPOSE 8000 80
+# Expose the terrain server
+EXPOSE 8000
 
 # Clean up APT when done
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

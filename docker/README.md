@@ -1,19 +1,16 @@
 # Cesium Terrain Server
 
-This provides a Docker container for serving [Cesium.js](http://cesiumjs.org/)
-client side assets in conjunction with custom terrain tilesets using
-[Cesium Terrain Server](https://github.com/geo-data/cesium-terrain-server).
-
-Within the container an instance of the Apache web server serves up the relevant
-server side assets provided by Cesium.js.  Apache also reverse proxies HTTP
-requests to `/tilesets/terrain` to an instance of Cesium Terrain Server for
-serving up terrain data.  This combination allows for easy testing of custom
-terrain tilesets as well as providing a base for developing Cesium applications.
+This provides a Docker container for running
+[Cesium Terrain Server](https://github.com/geo-data/cesium-terrain-server).  It
+is capable of serving custom terrain tilesets with the option of also serving
+[Cesium.js](http://cesiumjs.org/) client side assets: it comes bundled with
+Cesium.js.  This makes it a suitable platform for using in the development of
+Cesium.js web applications.
 
 ## Usage
 
 ```sh
-docker run -p 8080:80 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
+docker run -p 8080:8000 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
     geodata/cesium-terrain-server 
 ```
 
@@ -23,25 +20,20 @@ find subdirectories representing terrain tilesets.
 
 Running the previous command will serve up the Cesium resources on
 <http://localhost:8080/>. For instance you will be able to access the Cesium
-Hello World application at <http://localhost:8080/Apps/HelloWorld.html>. Apache
-runs on port 80 on the container, with the Cesium Terrain Server being exposed
-on port 8000.
+Hello World application at <http://localhost:8080/Apps/HelloWorld.html>.
 
 The only change in the container to the stock Cesium.js download is the addition
 of a top level `index.html` (this will be the resource returned by
 <http://localhost:8080/>). `index.html` is a very minimally modified version of
 `Apps/HelloWorld.html` provided by Cesium which additionally loads terrain
-pointed to by the the url `/tilesets/terrain/test`.  In the above example this
+pointed to by the the url `/tilesets/test`.  In the above example this
 requires the host directory `/data/docker/tilesets/terrain/test` to contain a
 terrain tileset, which will in turn expose the tileset to
 `/data/tilesets/terrain/test` in the container.
 
-## Logging
-
-All requests to the apache server are logged to
-`/var/log/apache2/other_vhosts_access.log`. All output from the terrain server
-is logged under `/var/log/terrain-server`.  This log is managed by
-[svlogd](http://smarden.org/runit/svlogd.8.html).
+Note that if you only want to serve tilesets and none of the Cesium static
+assets, you can set the `SERVE_STATIC` environment variable to `0`.  This is
+easily done by using `docker run --env SERVE_STATIC=0`.
 
 ## Creating and serving tilesets
 
@@ -81,9 +73,14 @@ The terrain data should now be visible at <http://localhost:8080/>.
 ## Caching tiles with Memcached
 
 The terrain server running within the container can be configured to use a
-memcache server to cache tileset data and increase performance.  This is done by
-either specifying a memcached container to link to or setting the `MEMCACHED`
-environment variable.
+memcache server to cache tileset data and increase performance.  Note that the
+terrain server does not use the cache itself, it only populates for each
+request.  The idea is that a reverse proxy attached to the memcache (such as
+Nginx) will first attempt to fulfil a request from the cache before falling back
+to the terrain server, which will then update the cache.
+
+Caching is enabled by either specifying a memcached container to link to or
+setting the `MEMCACHED` environment variable.
 
 ### Linking
 
@@ -144,6 +141,11 @@ advantage of the `Makefile` in the project root: running `make docker-local`
 will create a docker image tagged `geodata/cesium-terrain-server:local`.  This
 image, when run with a bind mount to the project root directory, is very handy
 for developing and testing.
+
+## Logging
+
+All output from the terrain server is logged under `/var/log/terrain-server`.
+This log is managed by [svlogd](http://smarden.org/runit/svlogd.8.html).
 
 ## Issues and Contributing
 
