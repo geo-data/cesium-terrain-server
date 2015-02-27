@@ -5,7 +5,6 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/geo-data/cesium-terrain-server/log"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 )
 
@@ -34,7 +33,7 @@ func (this *Cache) generateKey(r *http.Request) string {
 }
 
 func (this *Cache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	rec := httptest.NewRecorder()
+	rec := NewRecorder()
 
 	// Write to both the recorder and original writer
 	tee := MultiWriter(w, rec)
