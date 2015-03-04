@@ -62,9 +62,9 @@ func (this *Store) TilesetStatus(tileset string) (status stores.TilesetStatus) {
 	_, err := os.Stat(filepath.Join(this.root, tileset))
 	if err != nil {
 		if os.IsNotExist(err) {
-			return stores.FOUND
+			return stores.NOT_FOUND
 		}
 	}
 
-	return stores.NOT_FOUND
+	return stores.FOUND
 }
