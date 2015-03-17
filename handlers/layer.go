@@ -28,8 +28,8 @@ func LayerHandler(store stores.Storer) func(http.ResponseWriter, *http.Request) 
 		// Try and get a `layer.json` from the stores
 		layer, err = store.Layer(vars["tileset"])
 		if err == stores.ErrNoItem {
+			err = nil // don't persist this error
 			if store.TilesetStatus(vars["tileset"]) == stores.NOT_FOUND {
-				err = nil
 				http.Error(w,
 					fmt.Errorf("The tileset `%s` does not exist", vars["tileset"]).Error(),
 					http.StatusNotFound)
