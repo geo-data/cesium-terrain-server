@@ -16,7 +16,9 @@ fi
 if [ "${SERVE_STATIC}" = "0" ]
 then
     WEB_DIR=""
-else
+elif [ -z "${WEB_DIR}" ]
+then
+    # If no static directory is specified, use the default
     WEB_DIR="/var/www/cesium"
 fi
 

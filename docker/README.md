@@ -40,6 +40,11 @@ A number of environment variables can be set on the container using `docker run
   the static Cesium.js assets.  Useful if you only want to serve terrain
   tilesets.
 
+* Setting `WEB_DIR` to a directory will specify the directory from which to
+  serve up the static assets.  By default this is `/var/www/cesium`.  Note also
+  setting `SERVE_STATIC=0` will mean that no assets are served, no matter where
+  `WEB_DIR` points to.
+
 * Setting `LOG_LEVEL` to one of `crit`, `err`, `notice`, `debug` will determine
   what is logged.  `LOG_LEVEL=debug` is useful when developing, especially
   checking what keys are being set in Memcached.
