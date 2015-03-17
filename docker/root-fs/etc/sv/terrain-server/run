@@ -31,7 +31,7 @@ else
 fi
 
 # Run the server
-exec /sbin/setuser daemon /usr/local/bin/terrain-server \
+exec /sbin/setuser daemon /usr/local/bin/cesium-terrain-server \
     -port 8000 \
     -memcached "${MEMCACHED}" \
     -dir "${TILESET_DIR}" \

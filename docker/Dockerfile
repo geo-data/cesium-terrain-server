@@ -29,6 +29,9 @@ RUN apt-get install -y \
 ADD install-go.sh /tmp/
 RUN /tmp/install-go.sh
 
+# Set the Go workspace
+ENV GOPATH=/usr/local/go/_vendor:/usr/local/go GOBIN=/usr/local/bin
+
 # Install the terrain server
 ADD local/ /tmp/local/
 ADD install-terrain-server.sh /tmp/

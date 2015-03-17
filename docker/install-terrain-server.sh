@@ -4,9 +4,7 @@
 # Install the terrain server
 #
 
-export GOPATH=/tmp/go
-export PATH=${GOPATH}/bin:$PATH
-CTS_DIR=${GOPATH}/src/github.com/geo-data/cesium-terrain-server
+CTS_DIR=/usr/local/go/src/github.com/geo-data/cesium-terrain-server
 
 # Extract the terrain server code
 mkdir -p $CTS_DIR || exit 1
@@ -19,5 +17,4 @@ else
 fi
 
 # Build and install the server
-make bin/cesium-terrain-server || exit 1
-install --strip bin/cesium-terrain-server /usr/local/bin/terrain-server || exit 1
+make install || exit 1
