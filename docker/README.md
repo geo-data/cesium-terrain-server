@@ -45,6 +45,10 @@ A number of environment variables can be set on the container using `docker run
   setting `SERVE_STATIC=0` will mean that no assets are served, no matter where
   `WEB_DIR` points to.
 
+* Setting `BASE_TERRAIN_PATH` affects the base path under which terrain tiles
+  are served.  By default this is `/tilesets` but can be set to
+  e.g. `BASE_TERRAIN_PATH=/tiles/terrain`.
+
 * Setting `LOG_LEVEL` to one of `crit`, `err`, `notice`, `debug` will determine
   what is logged.  `LOG_LEVEL=debug` is useful when developing, especially
   checking what keys are being set in Memcached.

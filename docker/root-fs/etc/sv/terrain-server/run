@@ -32,12 +32,16 @@ else
     NO_REQUEST_LOG="false"
 fi
 
+# Decide on the base terrain path
+[ -z "${BASE_TERRAIN_PATH}" ] && BASE_TERRAIN_PATH="/tilesets"
+
 # Run the server
 exec /sbin/setuser daemon /usr/local/bin/cesium-terrain-server \
     -port=8000 \
     -memcached="${MEMCACHED}" \
     -dir="${TILESET_DIR}" \
     -web-dir="${WEB_DIR}" \
+    -base-terrain-url="${BASE_TERRAIN_PATH}" \
     -log-level="${LOG_LEVEL}" \
     -no-request-log="${NO_REQUEST_LOG}" \
     2>&1
