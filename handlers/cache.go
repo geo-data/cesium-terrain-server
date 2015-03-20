@@ -25,15 +25,13 @@ func NewCache(connstr string, handler http.Handler, limit Bytes, limiter Limiter
 }
 
 func (this *Cache) generateKey(r *http.Request) string {
-	var u *url.URL
-	if referer, ok := r.Header["Referer"]; ok {
-		u, _ = url.Parse(referer[0])
-	} else {
-		// Copy the request URL
-		u, _ = url.Parse(r.URL.String())
+	if key, ok := r.Header["X-Memcache-Key"]; ok {
+		return key[0]
 	}
 
-	return "tiles" + u.RequestURI()
+	// Use the request URI as a key.
+	url, _ := url.Parse(r.URL.String())
+	return url.RequestURI()
 }
 
 func (this *Cache) ServeHTTP(w http.ResponseWriter, r *http.Request) {

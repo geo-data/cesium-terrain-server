@@ -109,6 +109,32 @@ follows:
 cesium-terrain-server -dir /data/tilesets/terrain -memcached memcache.me.org:11211
 ```
 
+If present, the terrain server uses the value of the custom `X-Memcache-Key`
+header as the memcache key, otherwise it uses the value of the request URI.  A
+minimal Nginx configuration setting `X-Memcache-Key` is as follows:
+
+```
+server {
+    listen 80;
+
+    server_name localhost;
+
+    root /var/www/app;
+    index index.html;
+
+    location /tilesets/ {
+        set            $memcached_key "tiles$request_uri";
+        memcached_pass memcached:11211;
+        error_page     404 502 504 = @fallback;
+    }
+
+    location @fallback {
+        proxy_pass     http://tiles:8000;
+        proxy_set_header X-Memcache-Key $memcached_key;
+    }
+}
+```
+
 The `-cache-limit` option can be used in conjunction with the above to change
 the memory limit at which resources are considered to large for the cache.
 
