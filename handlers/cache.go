@@ -51,6 +51,11 @@ func (this *Cache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tee := MultiWriter(w, recorder)
 	this.handler.ServeHTTP(tee, r)
 
+	// Only cache 200 responses.
+	if rec.Code != 200 {
+		return
+	}
+
 	// If the cache limit has been exceeded, don't proceed to cache the
 	// response.
 	if limiter != nil && limiter.LimitExceeded() {
