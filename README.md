@@ -126,6 +126,11 @@ server {
         set            $memcached_key "tiles$request_uri";
         memcached_pass memcached:11211;
         error_page     404 502 504 = @fallback;
+        add_header Access-Control-Allow-Origin "*";
+
+        location ~* \.terrain$ {
+            add_header Content-Encoding gzip;
+        }
     }
 
     location @fallback {
