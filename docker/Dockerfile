@@ -31,7 +31,7 @@ RUN /tmp/install-go.sh
 
 # Install the terrain server
 ADD local/ /tmp/local/
-ADD install-terrain-server.sh /tmp/
+ADD cts-checkout.txt install-terrain-server.sh /tmp/
 RUN /tmp/install-terrain-server.sh
 
 # Install Cesium.js
