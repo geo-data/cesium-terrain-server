@@ -53,7 +53,7 @@ func (this *Store) Tile(tileset string, tile *stores.Terrain) (err error) {
 }
 
 func (this *Store) Layer(tileset string) ([]byte, error) {
-	filename := filepath.Join(tileset, "layer.json")
+	filename := filepath.Join(this.root, tileset, "layer.json")
 	return this.readFile(filename)
 }
 
