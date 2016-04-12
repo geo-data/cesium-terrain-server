@@ -152,7 +152,7 @@ that Go does.  Assuming that you have set the
 installation is a matter of running `go install`:
 
 ```sh
-go install github.com/geo-data/cesium-terrain-server
+go get github.com/geo-data/cesium-terrain-server/cmd/cesium-terrain-server
 ```
 
 A program called `cesium-terrain-server` should then be available under your
