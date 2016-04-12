@@ -2,14 +2,16 @@ cesium_version:=$(shell cat $(CURDIR)/docker/cesium-version.txt)
 checkout:=$(shell cat $(CURDIR)/docker/cts-checkout.txt)
 GOFILES:=$(shell find . -name '*.go')
 
+GOBINDATA := $(GOPATH)/bin/go-bindata
+
 install: $(GOFILES) assets/assets.go
 	go get ./... && go install ./...
 
-assets/assets.go: .go-bindata data
-	go-bindata -ignore \\.gitignore -nocompress -pkg="assets" -o assets/assets.go data
+assets/assets.go: $(GOBINDATA) data
+	$(GOBINDATA) -ignore \\.gitignore -nocompress -pkg="assets" -o assets/assets.go data
 
-.go-bindata: data/smallterrain-blank.terrain
-	go get github.com/jteeuwen/go-bindata/... && touch .go-bindata
+$(GOBINDATA): data/smallterrain-blank.terrain
+	go get github.com/jteeuwen/go-bindata/... && touch $(GOBINDATA)
 
 data/smallterrain-blank.terrain:
 	curl --location --progress-bar https://raw.github.com/geo-data/cesium-terrain-builder/master/data/smallterrain-blank.terrain > data/smallterrain-blank.terrain
