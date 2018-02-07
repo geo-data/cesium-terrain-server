@@ -87,7 +87,7 @@ Then you would serve up the terrain data using Cesium as per the general usage
 instructions above:
 
 ```sh
-docker run -p 8080:80 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
+docker run -p 8080:8000 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
     geodata/cesium-terrain-server 
 ```
 
