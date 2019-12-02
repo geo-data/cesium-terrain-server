@@ -1,8 +1,9 @@
-cesium_version:=$(shell cat $(CURDIR)/docker/cesium-version.txt)
-checkout:=$(shell cat $(CURDIR)/docker/cts-checkout.txt)
+CESIUM_VERSION:=1.63.1
+checkout:=$(or $(FRIENDLY_CHECKOUT),$(shell git branch --show-current))
+FRIENDLY_CHECKOUT:=$(or $(FRIENDLY_CHECKOUT),$(shell echo $(checkout) | sed 's/\//-/g'))
 GOFILES:=$(shell find . -name '*.go')
-
-GOBINDATA := $(GOPATH)/bin/go-bindata
+GOPATH:=$(or $(GOPATH),/usr/local/go)
+GOBINDATA:=$(GOPATH)/bin/go-bindata
 
 install: $(GOFILES) assets/assets.go
 	go get ./... && go install ./...
@@ -10,19 +11,26 @@ install: $(GOFILES) assets/assets.go
 assets/assets.go: $(GOBINDATA) data
 	$(GOBINDATA) -ignore \\.gitignore -nocompress -pkg="assets" -o assets/assets.go data
 
-$(GOBINDATA): data/smallterrain-blank.terrain
-	go get github.com/jteeuwen/go-bindata/... && touch $(GOBINDATA)
+$(GOBINDATA):
+	go get -u github.com/go-bindata/go-bindata@v1.0.0
 
 data/smallterrain-blank.terrain:
 	curl --location --progress-bar https://raw.github.com/geo-data/cesium-terrain-builder/master/data/smallterrain-blank.terrain > data/smallterrain-blank.terrain
 
-docker-local: docker/local/cesium-terrain-server-$(checkout).tar.gz docker/local/Cesium-$(cesium_version).zip
-	docker build -t geodata/cesium-terrain-server:local docker
+docker-local: docker/local/cesium-terrain-server-$(FRIENDLY_CHECKOUT).tar.gz docker/local/Cesium-$(CESIUM_VERSION).zip
+	docker build --build-arg FRIENDLY_CHECKOUT=$(FRIENDLY_CHECKOUT) --build-arg CESIUM_VERSION=$(CESIUM_VERSION) -t geodata/cesium-terrain-server:local docker
 
-docker/local/Cesium-$(cesium_version).zip: docker/cesium-version.txt
-	curl --location --progress-bar https://cesiumjs.org/releases/Cesium-$(cesium_version).zip > docker/local/Cesium-$(cesium_version).zip
+docker/local/Cesium-$(CESIUM_VERSION).zip:
+	curl --location --progress-bar https://github.com/AnalyticalGraphicsInc/cesium/releases/download/$(CESIUM_VERSION)/Cesium-$(CESIUM_VERSION).zip > docker/local/Cesium-$(CESIUM_VERSION).zip
 
-docker/local/cesium-terrain-server-$(checkout).tar.gz: $(GOFILES) docker/cts-checkout.txt docker/cesium-version.txt Makefile
-	git archive HEAD --prefix=cesium-terrain-server-$(checkout)/ --format=tar.gz -o docker/local/cesium-terrain-server-$(checkout).tar.gz
+docker/local/cesium-terrain-server-$(FRIENDLY_CHECKOUT).tar.gz: $(GOFILES) Makefile
+	git archive HEAD --prefix=cesium-terrain-server-$(FRIENDLY_CHECKOUT)/ --format=tar.gz -o docker/local/cesium-terrain-server-$(FRIENDLY_CHECKOUT).tar.gz
 
-.PHONY: docker-local install
+debug:
+	echo CESIUM_VERSION: $(CESIUM_VERSION)
+	echo checkout: $(checkout)
+	echo FRIENDLY_CHECKOUT: $(FRIENDLY_CHECKOUT)
+	echo GOFILES: $(GOFILES)
+	echo GOBINDATA: $(GOBINDATA)
+
+.PHONY: docker-local install debug

@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -e
+set -o pipefail
 
 ##
 # Set up the container based on the environment

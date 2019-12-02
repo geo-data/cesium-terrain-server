@@ -2,12 +2,13 @@ package fs
 
 import (
 	"fmt"
-	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/geo-data/cesium-terrain-server/log"
+	"github.com/geo-data/cesium-terrain-server/stores"
 )
 
 type Store struct {
