@@ -2,8 +2,9 @@ CESIUM_VERSION:=1.63.1
 checkout:=$(or $(FRIENDLY_CHECKOUT),$(shell git branch --show-current))
 FRIENDLY_CHECKOUT:=$(or $(FRIENDLY_CHECKOUT),$(shell echo $(checkout) | sed 's/\//-/g'))
 GOFILES:=$(shell find . -name '*.go')
-GOPATH:=$(or $(GOPATH),/usr/local/go)
-GOBINDATA:=$(GOPATH)/bin/go-bindata
+GOROOT:=$(or $(GOROOT),/usr/local/go)
+GOBIN:=$(or $(GOBIN),/usr/local/go/bin)
+GOBINDATA:=$(GOBIN)/go-bindata
 
 install: $(GOFILES) assets/assets.go
 	go get ./... && go install ./...
