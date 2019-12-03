@@ -10,14 +10,14 @@ set -o pipefail
 archive="/tmp/local/cesium-terrain-server-${FRIENDLY_CHECKOUT}.tar.gz"
 if [ ! -f $archive ]; then
 	echo !!!! Downloading Archive Local not Found !!!!!
-	wget --no-verbose -O $archive "https://github.com/geo-data/cesium-terrain-server/archive/${checkout}.tar.gz"
+	wget --no-verbose -O $archive "https://github.com/nmccready/cesium-terrain-server/archive/${checkout}.tar.gz"
 fi
 
 if [[ -z $GOPATH ]]; then
 	GOPATH=$GOROOT
 fi
 # Set up the source directory
-CTS_DIR=$GOPATH/src/github.com/geo-data/cesium-terrain-server
+CTS_DIR=$GOPATH/src/github.com/nmccready/cesium-terrain-server
 mkdir -p $CTS_DIR
 echo made src/github/cst_dir
 cd $CTS_DIR

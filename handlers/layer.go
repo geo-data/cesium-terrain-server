@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
+	"github.com/nmccready/cesium-terrain-server/log"
+	"github.com/nmccready/cesium-terrain-server/stores"
 	"github.com/gorilla/mux"
 )
 

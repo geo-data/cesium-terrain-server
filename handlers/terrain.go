@@ -3,9 +3,9 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"github.com/geo-data/cesium-terrain-server/assets"
-	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
+	"github.com/nmccready/cesium-terrain-server/assets"
+	"github.com/nmccready/cesium-terrain-server/log"
+	"github.com/nmccready/cesium-terrain-server/stores"
 	"github.com/gorilla/mux"
 	"net/http"
 )

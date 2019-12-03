@@ -1,7 +1,7 @@
 # Cesium Terrain Server
 
 This provides a Docker container for running
-[Cesium Terrain Server](https://github.com/geo-data/cesium-terrain-server).  It
+[Cesium Terrain Server](https://github.com/nmccready/cesium-terrain-server).  It
 is capable of serving custom terrain tilesets with the option of also serving
 [Cesium.js](http://cesiumjs.org/) client side assets: it comes bundled with
 Cesium.js.  This makes it a suitable platform for using in the development of
@@ -139,7 +139,7 @@ with custom terrain data.  General workflow would be to create tilesets as
 described in the previous section.  You would then need to edit
 `/var/www/cesium/index.html` in the container to suit your taste.  You may also
 want to customise the terrain server itself.  See the
-[Cesium Terrain Server](https://github.com/geo-data/cesium-terrain-server)
+[Cesium Terrain Server](https://github.com/nmccready/cesium-terrain-server)
 project repository for further details on this.
 
 Note that the terrain server will serve up any terrain tilesets present as
@@ -154,7 +154,7 @@ recommended approach would be to use the container as a base for your own
 application.  To do this:
 
 * Clone or download the
-[Cesium Terrain Server](https://github.com/geo-data/cesium-terrain-server)
+[Cesium Terrain Server](https://github.com/nmccready/cesium-terrain-server)
 repository.
 * Edit `docker/root-fs/var/www/cesium/index.html` to suit.
 * Build the container defined by the context in `docker/`.
@@ -173,7 +173,7 @@ This log is managed by [svlogd](http://smarden.org/runit/svlogd.8.html).
 ## Issues and Contributing
 
 Please report bugs or issues using the
-[GitHub issue tracker](https://github.com/geo-data/cesium-terrain-server).
+[GitHub issue tracker](https://github.com/nmccready/cesium-terrain-server).
 
 Code and documentation contributions are very welcome, either as GitHub pull
 requests or patches.

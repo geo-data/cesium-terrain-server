@@ -12,10 +12,10 @@ assets/assets.go: $(GOBINDATA) data
 	$(GOBINDATA) -ignore \\.gitignore -nocompress -pkg="assets" -o assets/assets.go data
 
 $(GOBINDATA):
-	go get -u github.com/go-bindata/go-bindata@v1.0.0
+	go get -u github.com/go-bindata/go-bindata/...
 
 data/smallterrain-blank.terrain:
-	curl --location --progress-bar https://raw.github.com/geo-data/cesium-terrain-builder/master/data/smallterrain-blank.terrain > data/smallterrain-blank.terrain
+	curl --location --progress-bar https://raw.github.com/nmccready/cesium-terrain-builder/master/data/smallterrain-blank.terrain > data/smallterrain-blank.terrain
 
 docker-local: docker/local/cesium-terrain-server-$(FRIENDLY_CHECKOUT).tar.gz docker/local/Cesium-$(CESIUM_VERSION).zip
 	docker build --build-arg FRIENDLY_CHECKOUT=$(FRIENDLY_CHECKOUT) --build-arg CESIUM_VERSION=$(CESIUM_VERSION) -t geodata/cesium-terrain-server:local docker
