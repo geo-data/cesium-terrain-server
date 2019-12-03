@@ -40,7 +40,7 @@ docker-tag-latest:
 	make docker-tag TO_VERSION=latest
 
 docker-push-latest:
-	make docker-tag TO_VERSION=latest
+	make docker-push TO_VERSION=latest
 
 docker-tag-version:
 	make docker-tag TO_VERSION=$(LATEST_TAG)
