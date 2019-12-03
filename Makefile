@@ -8,6 +8,7 @@ GOBINDATA:=$(GOBIN)/go-bindata
 DOCKER_REPO:=nmccready/cesium-terrain-server
 DOCKER_LOCAL_NAME:=$(DOCKER_REPO):local
 LATEST_TAG=$(shell git tag -l --sort=-v:refname | awk 'FNR == 1')
+LATEST_TAG_STABLE=$(shell git tag -l --sort=-v:refname | grep -v alpha | awk 'FNR == 1')
 
 install: $(GOFILES) assets/assets.go
 	go get ./... && go install ./...
@@ -47,6 +48,13 @@ docker-tag-version:
 
 docker-push-version:
 	make docker-push TO_VERSION=$(LATEST_TAG)
+
+docker-tag-stable:
+	make docker-tag TO_VERSION=$(LATEST_TAG_STABLE)
+
+docker-push-stable:
+	make docker-push TO_VERSION=$(LATEST_TAG_STABLE)
+
 
 debug:
 	echo CESIUM_VERSION: $(CESIUM_VERSION)
