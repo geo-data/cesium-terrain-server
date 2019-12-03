@@ -13,7 +13,7 @@ tools.
 
 This project also provides a [Docker](https://www.docker.com/) container to
 further simplify deployment of the server and testing of tilesets.  See the
-[Docker Registry](https://registry.hub.docker.com/u/geodata/cesium-terrain-server/)
+[Docker Registry](https://registry.hub.docker.com/u/nmccready/cesium-terrain-server/)
 for further details.
 
 ## Usage

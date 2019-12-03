@@ -19,7 +19,7 @@ data/smallterrain-blank.terrain:
 	curl --location --progress-bar https://raw.github.com/nmccready/cesium-terrain-builder/master/data/smallterrain-blank.terrain > data/smallterrain-blank.terrain
 
 docker-local: docker/local/cesium-terrain-server-$(FRIENDLY_CHECKOUT).tar.gz docker/local/Cesium-$(CESIUM_VERSION).zip
-	docker build --build-arg FRIENDLY_CHECKOUT=$(FRIENDLY_CHECKOUT) --build-arg CESIUM_VERSION=$(CESIUM_VERSION) -t geodata/cesium-terrain-server:local docker
+	docker build --build-arg FRIENDLY_CHECKOUT=$(FRIENDLY_CHECKOUT) --build-arg CESIUM_VERSION=$(CESIUM_VERSION) -t nmccready/cesium-terrain-server:local docker
 
 docker/local/Cesium-$(CESIUM_VERSION).zip:
 	curl --location --progress-bar https://github.com/AnalyticalGraphicsInc/cesium/releases/download/$(CESIUM_VERSION)/Cesium-$(CESIUM_VERSION).zip > docker/local/Cesium-$(CESIUM_VERSION).zip
