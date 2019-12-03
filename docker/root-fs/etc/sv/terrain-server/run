@@ -1,7 +1,4 @@
-#!/usr/bin/env bash
-set -e
-set -o pipefail
-
+#!/bin/sh
 ##
 # Runit run script for the terrain server
 #

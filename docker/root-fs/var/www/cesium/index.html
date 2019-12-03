@@ -19,9 +19,10 @@
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    var viewer = new Cesium.Viewer('cesiumContainer');
+		var viewer = new Cesium.Viewer('cesiumContainer');
+		// subset is **tiles**
     var terrainProvider = new Cesium.CesiumTerrainProvider({
-        url : '/tilesets/terrain/test'
+        url : '/tilesets/tiles'
     });
     viewer.scene.terrainProvider = terrainProvider;
   </script>

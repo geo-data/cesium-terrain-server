@@ -1,7 +1,4 @@
-#!/usr/bin/env bash
-set -e
-set -o pipefail
-
+#!/bin/sh
 LOGDIR=/var/log/terrain-server
-mkdir -p $LOGDIR
+mkdir -p $LOGDIR || exit 1
 exec chpst -u root:adm svlogd $LOGDIR
