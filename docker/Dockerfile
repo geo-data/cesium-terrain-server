@@ -47,7 +47,9 @@ RUN /tmp/install-go.sh
 # Set the Go workspace
 RUN echo 'export PATH="/usr/local/go/bin:$PATH"' >> /etc/bash.bashrc
 RUN echo 'export GO111MODULE=on' >> /etc/bash.bashrc
+RUN mkdir -p /root/go
 
+ENV GOPATH=/root/go
 ENV GOROOT=/usr/local/go
 ENV GOBIN=/usr/local/go/bin
 
