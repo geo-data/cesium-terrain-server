@@ -1,4 +1,4 @@
-module github.com/nmccready/cesium-terrain-server
+module github.com/geo-data/cesium-terrain-server
 
 go 1.13
 

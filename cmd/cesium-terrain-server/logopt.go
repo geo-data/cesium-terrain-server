@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/nmccready/cesium-terrain-server/log"
+	"github.com/geo-data/cesium-terrain-server/log"
 )
 
 type LogOpt struct {

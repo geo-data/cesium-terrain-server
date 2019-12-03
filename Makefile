@@ -5,7 +5,7 @@ GOFILES:=$(shell find . -name '*.go')
 GOROOT:=$(or $(GOROOT),/usr/local/go)
 GOBIN:=$(or $(GOBIN),/usr/local/go/bin)
 GOBINDATA:=$(GOBIN)/go-bindata
-DOCKER_REPO:=nmccready/cesium-terrain-server
+DOCKER_REPO:=geo-data/cesium-terrain-server
 DOCKER_LOCAL_NAME:=$(DOCKER_REPO):local
 LATEST_TAG=$(shell git tag -l --sort=-v:refname | awk 'FNR == 1')
 LATEST_TAG_STABLE=$(shell git tag -l --sort=-v:refname | grep -v alpha | awk 'FNR == 1')

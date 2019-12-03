@@ -13,7 +13,7 @@ tools.
 
 This project also provides a [Docker](https://www.docker.com/) container to
 further simplify deployment of the server and testing of tilesets.  See the
-[Docker Registry](https://registry.hub.docker.com/u/nmccready/cesium-terrain-server/)
+[Docker Registry](https://registry.hub.docker.com/u/geo-data/cesium-terrain-server/)
 for further details.
 
 ## Usage
@@ -152,7 +152,7 @@ that Go does.  Assuming that you have set the
 installation is a matter of running `go install`:
 
 ```sh
-go get github.com/nmccready/cesium-terrain-server/cmd/cesium-terrain-server
+go get github.com/geo-data/cesium-terrain-server/cmd/cesium-terrain-server
 ```
 
 A program called `cesium-terrain-server` should then be available under your
@@ -190,7 +190,7 @@ project source directory is very handy for developing and testing. NOTE: for you
 ## Issues and Contributing
 
 Please report bugs or issues using the
-[GitHub issue tracker](https://github.com/nmccready/cesium-terrain-server).
+[GitHub issue tracker](https://github.com/geo-data/cesium-terrain-server).
 
 Code and documentation contributions are very welcome, either as GitHub pull
 requests or patches.

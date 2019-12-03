@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/nmccready/cesium-terrain-server/log"
-	"github.com/nmccready/cesium-terrain-server/stores"
+	"github.com/geo-data/cesium-terrain-server/log"
+	"github.com/geo-data/cesium-terrain-server/stores"
 )
 
 type Store struct {
