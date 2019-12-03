@@ -23,20 +23,22 @@ RUN apt-get update -y
 
 # Install dependencies
 RUN apt-get install -y \
-		vim \
-		curl \
-    sed \
-    wget \
-    bash \
-    build-essential \
-    git \
-    rsync \
-    unzip
+	ack-grep \
+	vim \
+	curl \
+	sed \
+	wget \
+	bash \
+	build-essential \
+	git \
+	rsync \
+	unzip
 
 # RUN apt-get upgrade -y
 
 # default all users to bash
 RUN sed -i 's/\/bin\/sh/\/bin\/bash/g' /etc/passwd
+RUN ln -s /usr/bin/ack-grep /usr/bin/ack
 
 # Install Go
 ADD install-go.sh /tmp/
