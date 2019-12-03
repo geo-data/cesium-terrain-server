@@ -6,6 +6,9 @@ set -o pipefail
 # Install the terrain server
 #
 
+# not sure why I need to do this again, it's exported in install go
+export PATH=$GOBIN:$PATH
+
 # If a local source code archive does not exist, get it from GitHub.
 archive="/tmp/local/cesium-terrain-server-${FRIENDLY_CHECKOUT}.tar.gz"
 if [ ! -f $archive ]; then
@@ -26,7 +29,7 @@ echo "!!! in CTS_DIR !!!"
 # Extract the terrain server code
 tar --strip-components=1 -xzf $archive
 echo "!!! untared archive !!!"
-
+echo PATH: $PATH
 # Build and install the server
 make install
 # echo "!!! sucessful install !!!"

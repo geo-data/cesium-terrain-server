@@ -45,8 +45,6 @@ ADD install-go.sh /tmp/
 RUN /tmp/install-go.sh
 
 # Set the Go workspace
-RUN echo 'export PATH="/usr/local/go/bin:$PATH"' >> /root/.bashrc
-RUN echo 'export PATH="/usr/local/go/bin:$PATH"' >> /etc/bash.bashrc
 RUN echo 'export GO111MODULE=on' >> /etc/bash.bashrc
 RUN mkdir -p /root/go
 
