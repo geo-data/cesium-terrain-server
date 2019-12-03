@@ -185,7 +185,7 @@ export GO111MODULE=on
 
 Executing `make docker-local` will create a docker image tagged
 `geodata/cesium-terrain-server:local` which when run with a bind mount to the
-project source directory is very handy for developing and testing.
+project source directory is very handy for developing and testing. NOTE: for your local changes to take effect within a docker image the local changes must be committed!
 
 ## Issues and Contributing
 
