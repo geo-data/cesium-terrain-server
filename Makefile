@@ -46,7 +46,7 @@ docker-tag-version:
 	make docker-tag TO_VERSION=$(LATEST_TAG)
 
 docker-push-version:
-	make docker-tag TO_VERSION=$(LATEST_TAG)
+	make docker-push TO_VERSION=$(LATEST_TAG)
 
 debug:
 	echo CESIUM_VERSION: $(CESIUM_VERSION)
