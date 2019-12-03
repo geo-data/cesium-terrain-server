@@ -8,7 +8,7 @@ JavaScript class present in the Cesium.js client.
 
 This has specifically been created for easing the development and testing of
 terrain tilesets created using the
-[Cesium Terrain Builder](https://github.com/nmccready/cesium-terrain-builder)
+[Cesium Terrain Builder](https://github.com/geo-data/cesium-terrain-builder)
 tools.
 
 This project also provides a [Docker](https://www.docker.com/) container to
@@ -34,7 +34,7 @@ $ cesium-terrain-server:
 ```
 
 Assume you have the following (small) terrain tileset (possibly created with
-[`ctb-tile`](https://github.com/nmccready/cesium-terrain-builder#ctb-tile)):
+[`ctb-tile`](https://github.com/geo-data/cesium-terrain-builder#ctb-tile)):
 
 ```
 /data/tilesets/terrain/srtm/
