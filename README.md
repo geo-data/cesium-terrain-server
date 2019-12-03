@@ -13,7 +13,7 @@ tools.
 
 This project also provides a [Docker](https://www.docker.com/) container to
 further simplify deployment of the server and testing of tilesets.  See the
-[Docker Registry](https://registry.hub.docker.com/u/geodata/cesium-terrain-server/)
+[Docker Registry](https://registry.hub.docker.com/u/geo-data/cesium-terrain-server/)
 for further details.
 
 ## Usage
@@ -160,13 +160,32 @@ A program called `cesium-terrain-server` should then be available under your
 
 ## Developing
 
-The code has been developed on a Linux platform. After downloading the package
+The code has been developed on a Linux/macOS platform. After downloading the package
 you should be able to run `make` from the project root to build the server,
 which will be available as `./bin/cesium-terrain-server`.
 
+Note: Getting this building has been an absolute blast ... (not really many fixes)
+
+Note: to make things mich less painful make sure you have set
+
+- `GOPATH`
+- `GOROOT`
+- `GOBIN`
+- `GO111MODULE` - optional
+
+macOS / brew example ~/.zshrc
+
+```.zshrc
+export GOPATH="$HOME/go"
+export GOROOT="$GOPATH"
+export GOBIN="$GOROOT"/bin
+# OPTIONAL, it might already be set
+export GO111MODULE=on
+```
+
 Executing `make docker-local` will create a docker image tagged
 `geodata/cesium-terrain-server:local` which when run with a bind mount to the
-project source directory is very handy for developing and testing.
+project source directory is very handy for developing and testing. NOTE: for your local changes to take effect within a docker image the local changes must be committed!
 
 ## Issues and Contributing
 

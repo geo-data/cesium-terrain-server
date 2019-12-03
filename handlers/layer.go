@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/geo-data/cesium-terrain-server/log"
 	"github.com/geo-data/cesium-terrain-server/stores"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 // An HTTP handler which returns a tileset's `layer.json` file

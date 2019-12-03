@@ -2,11 +2,16 @@
 # Image for the Cesium Terrain Server
 #
 
-# Ubuntu 14.04 Trusty Tahr
 FROM phusion/baseimage:0.9.15
+# FROM debian:jessie-slim
+
+ARG FRIENDLY_CHECKOUT
+ARG CESIUM_VERSION
 
 # Set correct environment variables.
 ENV HOME /root
+ENV FRIENDLY_CHECKOUT $FRIENDLY_CHECKOUT
+ENV CESIUM_VERSION $CESIUM_VERSION
 
 # Regenerate SSH host keys. baseimage-docker does not contain any, so you
 # have to do that yourself. You may also comment out this instruction; the
@@ -18,27 +23,42 @@ RUN apt-get update -y
 
 # Install dependencies
 RUN apt-get install -y \
-    wget \
-    build-essential \
-    git \
-    mercurial \
-    rsync \
-    unzip
+	ack-grep \
+	vim \
+	curl \
+	sed \
+	wget \
+	bash \
+	build-essential \
+	git \
+	rsync \
+	unzip
+
+# RUN apt-get upgrade -y
+
+# default all users to bash
+RUN sed -i 's/\/bin\/sh/\/bin\/bash/g' /etc/passwd
+RUN ln -s /usr/bin/ack-grep /usr/bin/ack
 
 # Install Go
 ADD install-go.sh /tmp/
 RUN /tmp/install-go.sh
 
 # Set the Go workspace
-ENV GOPATH=/usr/local/go/_vendor:/usr/local/go GOBIN=/usr/local/bin
+RUN echo 'export GO111MODULE=on' >> /etc/bash.bashrc
+RUN mkdir -p /root/go
+
+ENV GOPATH=/root/go
+ENV GOROOT=/usr/local/go
+ENV GOBIN=/usr/local/go/bin
 
 # Install the terrain server
 ADD local/ /tmp/local/
-ADD cts-checkout.txt install-terrain-server.sh /tmp/
+ADD install-terrain-server.sh /tmp/
 RUN /tmp/install-terrain-server.sh
 
 # Install Cesium.js
-ADD cesium-version.txt install-cesiumjs.sh /tmp/
+ADD install-cesiumjs.sh /tmp/
 RUN /tmp/install-cesiumjs.sh
 
 # Add our filesystem updates
