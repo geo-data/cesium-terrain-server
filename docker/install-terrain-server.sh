@@ -28,5 +28,5 @@ tar --strip-components=1 -xzf $archive
 echo "!!! untared archive !!!"
 
 # Build and install the server
-# make install
+make install
 # echo "!!! sucessful install !!!"
